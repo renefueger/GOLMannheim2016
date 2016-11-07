@@ -1,5 +1,6 @@
 ﻿namespace GOLTests
 {
+    using FakeItEasy;
     using GOLMannheim2016.Model;
     using NUnit.Framework;
 
@@ -66,7 +67,37 @@
 
             var expectedString = "----\n" +
                                  "----\n" +
-                                 "----\n";
+                                 "----";
+            Assert.That(board.ToString(), Is.EqualTo(expectedString));
+        }
+
+        [Test]
+        public void RandomizeBoardShouldResultInCallingTheRandomizer()
+        {
+            var board = new Board(1, 1);
+
+            var randomizer = A.Fake<IRandomizer>();
+            board.Randomizer = randomizer;
+
+            board.CreateRandom();
+
+            A.CallTo(() => randomizer.Randomize()).MustHaveHappened();
+        }
+
+        [Test]
+        public void RandomizeThreeByThreeBoardShouldResultInRandomizedBoard()
+        {
+            var board = new Board(3, 3);
+
+            var randomizer = A.Fake<IRandomizer>();
+            board.Randomizer = randomizer;
+            A.CallTo(() => randomizer.Randomize()).ReturnsNextFromSequence(true,false,true,false,true,false,true,false,false);
+
+            board.CreateRandom();
+
+            var expectedString = "+-+\n" +
+                                 "-+-\n" +
+                                 "+--";
             Assert.That(board.ToString(), Is.EqualTo(expectedString));
         }
     }
